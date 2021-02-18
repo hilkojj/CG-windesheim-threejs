@@ -13,7 +13,8 @@
 </head>
 
 <body>
-    <script src="js/three.js"></script>
+    <script src="js/threejs/three.js"></script>
+    <script src="js/threejs/GLTFLoader.js"></script>
     <script>
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
@@ -36,9 +37,28 @@
         const geometry = new THREE.BoxGeometry();
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         const cube = new THREE.Mesh(geometry, material);
+        cube.position.x = 1;
         scene.add(cube);
 
         camera.position.z = 5;
+
+        const loader = new THREE.GLTFLoader();
+        loader.load("models/martini_toren.glb", function (gltf) {
+
+            scene.add(gltf.scene);
+
+        }, undefined, function (error) {
+
+            console.error(error);
+            alert("Error while loading model(s)!\nCheck console.");
+        });
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.);
+        directionalLight.position.set(5, 10, 10);
+        scene.add(directionalLight);
+
+        const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 3);
+        scene.add(light);
 
         function render() {
             requestAnimationFrame(render);
