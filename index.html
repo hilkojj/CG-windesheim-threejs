@@ -1,17 +1,54 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>CG</title>
-		<style>
-			body {
-                margin: 0;
-            }
-		</style>
-	</head>
-	<body>
-		<script src="js/three.js"></script>
-		<script>
-			// Our Javascript will go here.
-		</script>
-	</body>
+
+<head>
+    <title>CG</title>
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="js/three.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+
+        const renderer = new THREE.WebGLRenderer();
+        document.body.appendChild(renderer.domElement);
+
+        // this function resizes the camera & canvas so it fits the window:
+        function onWindowResize() {
+
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize, false);   // call onWindowResize() every time the window resizes.
+        onWindowResize();                                           // call onWindowResize() once
+
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 5;
+
+        function render() {
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+        }
+        render();
+    </script>
+</body>
+
 </html>
