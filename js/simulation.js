@@ -1,4 +1,7 @@
+var m = 7;
+
 function init() {
+    console.log(m);
     const clock = new THREE.Clock();
 
     const scene = new THREE.Scene();
@@ -11,7 +14,6 @@ function init() {
     camera.lookAt(new THREE.Vector3(0, 0, 0))
 
     const renderer = new THREE.WebGLRenderer();
-    renderer.shadowMapEnabled = true;
     document.body.appendChild(renderer.domElement);
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.update();
@@ -34,6 +36,8 @@ function init() {
     const cube = new THREE.Mesh(geometry, material);
     cube.position.x = 1;
     scene.add(cube);
+
+    const car = new Car ( scene, 0, 0 );
 
     function loadModel(file, x, y, z) {
         const loader = new THREE.GLTFLoader();
@@ -102,11 +106,11 @@ function init() {
 
     function render() {
         requestAnimationFrame(render);
-        //controls.update();
         renderer.render(scene, camera);
 
         cube.rotation.x += 0.01;
         cube.rotation.y += 0.01;
+        car.update();
     }
     render();
 }
