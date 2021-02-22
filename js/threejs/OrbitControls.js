@@ -7,19 +7,7 @@
  */
 /*global THREE, console */
 
-// This set of controls performs orbiting, dollying (zooming), and panning. It maintains
-// the "up" direction as +Y, unlike the TrackballControls. Touch on tablet and phones is
-// supported.
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finter swipe
-//
-// This is a drop-in replacement for (most) TrackballControls used in examples.
-// That is, include this js file and wherever you see:
-//    	controls = new THREE.TrackballControls( camera );
-//      controls.target.z = 150;
-// Simple substitute "OrbitControls" and the control should work as-is.
+// Modified to better simulate a moveable camera.
 
 THREE.OrbitControls = function ( object, domElement ) {
 
@@ -33,14 +21,16 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// "target" sets the location of focus, where the control orbits around
 	// and where it pans with respect to.
-	this.target = new THREE.Vector3();
+	this.target = this.object.position.clone();
+	this.target.z += 5.0;
+	console.log(this.target);
 
 	// center is old, deprecated; use "target" instead
 	this.center = this.target;
 
 	// This option actually enables dollying in and out; left as "zoom" for
 	// backwards compatibility
-	this.noZoom = false;
+	this.noZoom = true;
 	this.zoomSpeed = 1.0;
 
 	// Limits to how far you can dolly in and out
@@ -52,7 +42,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.rotateSpeed = 1.0;
 
 	// Set to true to disable this control
-	this.noPan = false;
+	this.noPan = true;
 	this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
 
 	// Set to true to automatically rotate around the target
@@ -72,8 +62,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 	// Set to true to disable use of the keys
 	this.noKeys = false;
 
-	// The four arrow keys
-	this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+	// All keys used for steering.
+	this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40, A: 65, S: 83, D:68, Q: 81, W: 87, E: 69 };
 
 	// Mouse buttons
 	this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
@@ -158,10 +148,13 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.panLeft = function ( distance ) {
 
 		var te = this.object.matrix.elements;
+		
+		//console.log(te);
 
 		// get X column of matrix
 		panOffset.set( te[ 0 ], te[ 1 ], te[ 2 ] );
 		panOffset.multiplyScalar( - distance );
+		console.log(panOffset);
 
 		pan.add( panOffset );
 
@@ -171,10 +164,13 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.panUp = function ( distance ) {
 
 		var te = this.object.matrix.elements;
+		//console.log(te);
 
 		// get Y column of matrix
 		panOffset.set( te[ 4 ], te[ 5 ], te[ 6 ] );
 		panOffset.multiplyScalar( distance );
+		
+		console.log(panOffset);
 
 		pan.add( panOffset );
 
@@ -242,6 +238,9 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.update = function () {
 
 		var position = this.object.position;
+
+		if (scope.target.y < 0) scope.target.y = 0;
+		if (scope.object.position.y < 0) scope.object.position.y = 0;
 
 		offset.copy( position ).sub( this.target );
 
@@ -491,32 +490,55 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	function onKeyDown( event ) {
 
-		if ( scope.enabled === false || scope.noKeys === true || scope.noPan === true ) return;
+		if ( scope.enabled === false || scope.noKeys === true) return;
 
+		var step;
+		
 		switch ( event.keyCode ) {
 
 			case scope.keys.UP:
-				scope.pan( 0, scope.keyPanSpeed );
-				scope.update();
+			case scope.keys.W:
+				step = scope.target.clone().sub(scope.object.position).normalize();
+				move(step);
 				break;
 
 			case scope.keys.BOTTOM:
-				scope.pan( 0, - scope.keyPanSpeed );
-				scope.update();
+			case scope.keys.S:
+				step = scope.object.position.clone().sub(scope.target).normalize();
+				move(step);
 				break;
 
 			case scope.keys.LEFT:
-				scope.pan( scope.keyPanSpeed, 0 );
-				scope.update();
+			case scope.keys.A:
+				scope.rotateLeft(-Math.PI / 12);
 				break;
 
 			case scope.keys.RIGHT:
-				scope.pan( - scope.keyPanSpeed, 0 );
-				scope.update();
+			case scope.keys.D:
+				scope.rotateLeft(Math.PI / 12);
 				break;
 
-		}
+			case scope.keys.Q:
+				step = new THREE.Vector3(0, -1, 0);
+				move(step);
+				break;
 
+			case scope.keys.E:
+				step = new THREE.Vector3(0, 1, 0);
+				move(step);
+				break;
+				
+			default:
+				return;
+		}
+		scope.update();
+
+	}
+
+	function move( where ) {
+		where.multiplyScalar(2);
+		scope.target.add(where);
+		scope.object.position.add(where);
 	}
 
 	function touchstart( event ) {
