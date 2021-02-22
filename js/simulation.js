@@ -4,8 +4,8 @@ function init() {
     const scene = new THREE.Scene();
     const fov = 75;
     const aspect = 1;  // the canvas default
-    const near = 0.1;
-    const far = 100;
+    const near = 1;
+    const far = 1000;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.set(0, 5, -10);
     camera.lookAt(new THREE.Vector3(0, 0, 0))
@@ -13,7 +13,7 @@ function init() {
     const renderer = new THREE.WebGLRenderer();
     renderer.shadowMapEnabled = true;
     document.body.appendChild(renderer.domElement);
-    const controls = new THREE.OrbitControls ( camera, renderer.domElement );
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.update();
 
 
@@ -38,11 +38,11 @@ function init() {
     function loadModels(file) {
         const loader = new THREE.GLTFLoader();
         loader.load(file, function (gltf) {
-    
+
             scene.add(gltf.scene);
-    
+
         }, undefined, function (error) {
-    
+
             console.error(error);
             alert("Error while loading model(s)!\nCheck console.");
         });
@@ -58,6 +58,20 @@ function init() {
 
     const light = new THREE.HemisphereLight(0xADDEFF, 0xffffff, 1.);
     scene.add(light);
+
+    // Adding Skybox:
+    {
+        const loader = new THREE.CubeTextureLoader();
+        const texture = loader.load([
+            './models/textures/skyboxsun45deg/skyrender0001.png',   // pos-x
+            './models/textures/skyboxsun45deg/skyrender0004.png',   // neg-x
+            './models/textures/skyboxsun45deg/skyrender0003.png',   // pos-y
+            './models/textures/skyboxsun45deg/skyrender0006.png',   // neg-y
+            './models/textures/skyboxsun45deg/skyrender0005.png',   // pos-z
+            './models/textures/skyboxsun45deg/skyrender0002.png'    // neg-z
+        ]);
+        scene.background = texture;
+    }
 
     function render() {
         requestAnimationFrame(render);
