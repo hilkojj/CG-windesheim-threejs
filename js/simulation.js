@@ -35,22 +35,28 @@ function init() {
     cube.position.x = 1;
     scene.add(cube);
 
-    const loader = new THREE.GLTFLoader();
-    loader.load("./models/zamek.glb", function (gltf) {
+    function loadModels(file) {
+        const loader = new THREE.GLTFLoader();
+        loader.load(file, function (gltf) {
+    
+            scene.add(gltf.scene);
+    
+        }, undefined, function (error) {
+    
+            console.error(error);
+            alert("Error while loading model(s)!\nCheck console.");
+        });
+    }
 
-        scene.add(gltf.scene);
+    loadModels("models/zamek.glb")
+    loadModels("models/martini_toren.glb")
 
-    }, undefined, function (error) {
-
-        console.error(error);
-        alert("Error while loading model(s)!\nCheck console.");
-    });
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.);
     directionalLight.position.set(5, 10, 10);
     scene.add(directionalLight);
 
-    const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 3);
+    const light = new THREE.HemisphereLight(0xADDEFF, 0xffffff, 1.);
     scene.add(light);
 
     function render() {
