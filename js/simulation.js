@@ -35,7 +35,7 @@ function init() {
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const cube = new THREE.Mesh(geometry, material);
     cube.position.x = 1;
-    scene.add(cube);
+    //scene.add(cube);
 
     const car = new Car ( scene, 0, 0 );
 
