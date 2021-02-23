@@ -1,21 +1,21 @@
 CarState = {
-    XMOVE : 1,
-    ZMOVE : 2,
-    XTOZ  : 3,
-    ZTOX  : 4,
-    STOP  : 5
+    XMOVE : 1, //movement along x axis
+    ZMOVE : 2, //movement along z axis
+    XTOZ  : 3, //turning from the x axis to z
+    ZTOX  : 4, //turning from the z axis to x
+    STOP  : 5  //no movement
 }
 
 class Car {
 
-    state = CarState.XMOVE;
+    state = CarState.XMOVE; //determines the axis along which the car moves
     static distanceByFrame = 0.01; //determines how fast the car travels
     wheels = new Array();
     parts = new THREE.Group();
     static bodyMaterial = new THREE.MeshPhongMaterial( {color: 0xffff00} );
 
     constructor( scene, x, z, xLowerBoundary, xUpperBoundary, zLowerBoundary, zUpperBoundary ) {
-        this.xLowerBoundary = xLowerBoundary;
+        this.xLowerBoundary = xLowerBoundary; 
         this.xUpperBoundary = xUpperBoundary;
         this.zUpperBoundary = zUpperBoundary;
         this.zLowerBoundary = zLowerBoundary;
@@ -37,7 +37,7 @@ class Car {
     }
 
     counter = 0;
-    xMovementSign = -1;
+    xMovementSign = -1; //determines which way along the axis will the car move
     zMovementSign = 1;
 
     update = function() {
@@ -51,8 +51,7 @@ class Car {
         
                 if ((this.parts.position.x <= this.xLowerBoundary && this.xMovementSign == -1)
                     || (this.parts.position.x >= this.xUpperBoundary && this.xMovementSign == 1)) {
-                        console.log("turn to z");
-                        this.state = StateEnum.XTOZ;
+                        this.state = CarState.XTOZ;
                         this.zMovementSign *= -1;
                         this.counter = 0;
                 }
@@ -64,7 +63,7 @@ class Car {
                 this.counter += angleByFrame;
                 
                 if (this.counter >= Math.PI / 2) {
-                    this.state = StateEnum.ZMOVE;
+                    this.state = CarState.ZMOVE;
                     this.counter = 0;
                 }
                 break;
@@ -74,8 +73,7 @@ class Car {
         
                 if ((this.parts.position.z <= this.zLowerBoundary && this.zMovementSign == -1)
                     || (this.parts.position.z >= this.zUpperBoundary && this.zMovementSign == 1)) {
-                        console.log("turn to x");
-                        this.state = StateEnum.ZTOX;
+                        this.state = CarState.ZTOX;
                         this.xMovementSign *= -1;
                         this.counter = 0;
                 }
@@ -87,7 +85,7 @@ class Car {
                 this.counter += angleByFrame;
                 
                 if (this.counter >= Math.PI / 2) {
-                    this.state = StateEnum.XMOVE;
+                    this.state = CarState.XMOVE;
                     this.counter = 0;
                 }
                 break;
