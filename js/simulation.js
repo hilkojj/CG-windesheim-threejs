@@ -31,13 +31,7 @@ function init() {
     window.addEventListener('resize', onWindowResize, false);   // call onWindowResize() every time the window resizes.
     onWindowResize();                                           // call onWindowResize() once
 
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.x = 1;
-    //scene.add(cube);
-
-    const car = new Car ( scene, 0, 0 );
+    const car = new Car ( scene, 0, 0, -20, 0, -20, 0 );
 
     function loadModel(file, x, y, z) {
         const loader = new THREE.GLTFLoader();
@@ -57,7 +51,7 @@ function init() {
         });
     }
 
-    loadModel("models/zamek.glb", 10, -1, 0)          // a castle in Poland
+    loadModel("models/zamek.glb", -10, -1, -10)          // a castle in Poland
     loadModel("models/martini_toren.glb", 0, -1, 10)  // a tower in Groningen
 
 
@@ -104,12 +98,11 @@ function init() {
         scene.add(plane);
     }
 
+    var counter = 0;
     function render() {
         requestAnimationFrame(render);
         renderer.render(scene, camera);
 
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
         car.update();
     }
     render();
