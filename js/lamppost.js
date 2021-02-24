@@ -1,4 +1,5 @@
 
+// this function will add a lamp post at given (x, y, z) position
 function addLampPost(scene, x, y, z) {
 
     const HEIGHT = 3.5;

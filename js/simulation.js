@@ -1,6 +1,6 @@
 function init() {
 
-    const FLOOR_HEIGHT = -1;
+    const FLOOR_HEIGHT = -1; // height of the floor, models should be placed at this height too.
 
     const scene = new THREE.Scene();
     const fov = 75;
@@ -11,8 +11,11 @@ function init() {
     camera.position.set(0, 5, -10);
     camera.lookAt(new THREE.Vector3(0, 0, 0))
 
+    // initialize renderer:
     const renderer = new THREE.WebGLRenderer();
     document.body.appendChild(renderer.domElement);
+
+    // initialize camera controls (WASD+QE+Mouse):
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.update();
 
@@ -26,6 +29,7 @@ function init() {
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    // update camera/canvas size:
     window.addEventListener('resize', onWindowResize, false);   // call onWindowResize() every time the window resizes.
     onWindowResize();                                           // call onWindowResize() once
 
@@ -44,18 +48,15 @@ function init() {
             addLampPost(scene, 8 + i * -5., FLOOR_HEIGHT, 16.5);
     }
 
-    // function to load a model, and to place it at (x, y, z)
+    // function to load a GLFT model, and to place it at (x, y, z)
     function loadModel(file, x, y, z) {
         const loader = new THREE.GLTFLoader();
         loader.load(file, function (gltf) {
 
-            const model = gltf.scene.children[0];
+            const model = gltf.scene.children[0];   // only pick the first model.
             model.position.x = x;
             model.position.y = y;
             model.position.z = z;
-
-            model.castShadow = true;
-            model.receiveShadow = true;
 
             scene.add(model);
 
@@ -72,17 +73,12 @@ function init() {
 
     // Adding sun & hemisphere light:
     {
-
+        // sun:
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1.);
         directionalLight.position.set(5, 10, 10);
-        directionalLight.castShadow = true;
         scene.add(directionalLight);
-        //Set up shadow properties for the light
-        directionalLight.shadow.mapSize.width = 2000; // default
-        directionalLight.shadow.mapSize.height = 2000; // default
-        directionalLight.shadow.camera.near = 0.5; // default
-        directionalLight.shadow.camera.far = 500; // default
 
+        // hemisphere:
         const light = new THREE.HemisphereLight(0xADDEFF, 0xffffff, 1.);
         scene.add(light);
     }
@@ -111,7 +107,7 @@ function init() {
         var geo = new THREE.PlaneBufferGeometry(1000, 1000);
 
         var groundTexture = new THREE.TextureLoader().load('models/textures/grass.jpg');
-        groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+        groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;   // repeat grass texture.
         groundTexture.repeat.set(500, 500);
 
         var mat = new THREE.MeshBasicMaterial({ map: groundTexture });
