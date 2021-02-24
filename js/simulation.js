@@ -1,8 +1,4 @@
-var m = 7;
-
 function init() {
-    console.log(m);
-    const clock = new THREE.Clock();
 
     const scene = new THREE.Scene();
     const fov = 75;
@@ -31,8 +27,16 @@ function init() {
     window.addEventListener('resize', onWindowResize, false);   // call onWindowResize() every time the window resizes.
     onWindowResize();                                           // call onWindowResize() once
 
-    const car = new Car ( scene, 0, 0, -20, 0, -20, 0 );
+    // initiating a few cars:
+    const cars = [
+        new Car(scene, 0, 0, -20, 0, -20, 0, 30),
+        new Car(scene, 0, 0, -20, 0, -20, 0, 40),
+        new Car(scene, 0, 0, -20, 0, -20, 0, 60),
+        new Car(scene, 0, 0, -20, 0, -20, 0, 55),
+        new Car(scene, 0, 0, -20, 0, -20, 0, 300)
+    ];
 
+    // function to load a model, and to place it at (x, y, z)
     function loadModel(file, x, y, z) {
         const loader = new THREE.GLTFLoader();
         loader.load(file, function (gltf) {
@@ -51,17 +55,20 @@ function init() {
         });
     }
 
-    loadModel("models/zamek.glb", -10, -1, -10)          // a castle in Poland
-    loadModel("models/martini_toren.glb", 0, -1, 10)  // a tower in Groningen
+    loadModel("models/zamek.glb", -10, -1, -0);         // a castle in Poland
+    loadModel("models/martini_toren.glb", -5, -1, 19);    // a tower in Groningen
+    loadModel("models/road.glb", 0, -.99, 0);            // the road
 
+    // Adding sun & hemisphere light:
+    {
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.);
-    directionalLight.position.set(5, 10, 10);
-    scene.add(directionalLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.);
+        directionalLight.position.set(5, 10, 10);
+        scene.add(directionalLight);
 
-    const light = new THREE.HemisphereLight(0xADDEFF, 0xffffff, 1.);
-    scene.add(light);
-
+        const light = new THREE.HemisphereLight(0xADDEFF, 0xffffff, 1.);
+        scene.add(light);
+    }
     // Adding Skybox:
     {
         const loader = new THREE.CubeTextureLoader();
@@ -98,12 +105,12 @@ function init() {
         scene.add(plane);
     }
 
-    var counter = 0;
+    // render function for updating the scene and to render it.
     function render() {
         requestAnimationFrame(render);
         renderer.render(scene, camera);
 
-        car.update();
+        cars.forEach(c => c.update());
     }
     render();
 }
