@@ -1,9 +1,11 @@
 function init() {
 
+    const FLOOR_HEIGHT = -1;
+
     const scene = new THREE.Scene();
     const fov = 75;
     const aspect = 1;  // the canvas default
-    const near = 1;
+    const near = .1;
     const far = 1000;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.set(0, 5, -10);
@@ -36,6 +38,12 @@ function init() {
         new Car(scene, 0, 0, -20, 0, -20, 0, 300)
     ];
 
+    // Adding a few lampposts:
+    {
+        for (let i = 0; i < 8; i++)
+            addLampPost(scene, 8 + i * -5., FLOOR_HEIGHT, 16.5);
+    }
+
     // function to load a model, and to place it at (x, y, z)
     function loadModel(file, x, y, z) {
         const loader = new THREE.GLTFLoader();
@@ -46,6 +54,9 @@ function init() {
             model.position.y = y;
             model.position.z = z;
 
+            model.castShadow = true;
+            model.receiveShadow = true;
+
             scene.add(model);
 
         }, undefined, function (error) {
@@ -55,16 +66,22 @@ function init() {
         });
     }
 
-    loadModel("models/zamek.glb", -10, -1, -0);         // a castle in Poland
-    loadModel("models/martini_toren.glb", -5, -1, 19);    // a tower in Groningen
-    loadModel("models/road.glb", 0, -.99, 0);            // the road
+    loadModel("models/zamek.glb", -10, FLOOR_HEIGHT, -0);           // a castle in Poland
+    loadModel("models/martini_toren.glb", -5, FLOOR_HEIGHT, 19);    // a tower in Groningen
+    loadModel("models/road.glb", 0, FLOOR_HEIGHT + .01, 0);         // the road
 
     // Adding sun & hemisphere light:
     {
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1.);
         directionalLight.position.set(5, 10, 10);
+        directionalLight.castShadow = true;
         scene.add(directionalLight);
+        //Set up shadow properties for the light
+        directionalLight.shadow.mapSize.width = 2000; // default
+        directionalLight.shadow.mapSize.height = 2000; // default
+        directionalLight.shadow.camera.near = 0.5; // default
+        directionalLight.shadow.camera.far = 500; // default
 
         const light = new THREE.HemisphereLight(0xADDEFF, 0xffffff, 1.);
         scene.add(light);
@@ -100,7 +117,8 @@ function init() {
         var mat = new THREE.MeshBasicMaterial({ map: groundTexture });
         var plane = new THREE.Mesh(geo, mat);
         plane.rotateX(- Math.PI / 2); // rotate it
-        plane.position.y -= 1.;
+        plane.position.y = FLOOR_HEIGHT;
+        plane.receiveShadow = true;
 
         scene.add(plane);
     }
