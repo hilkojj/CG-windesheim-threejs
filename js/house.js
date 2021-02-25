@@ -1,6 +1,8 @@
+//this function adds a house of a given height (h) at coordinates (x, z)
+//windows parameter refers to a windowList instance, which will be responsible for turning the light on and off
 function addHouse(scene, windows, x, z, h) {
 
-    const WIDTH = 5;
+    const WIDTH = 5; //width and depth of all generated buildings
 
     // cone - roof:
     {
@@ -92,13 +94,18 @@ class WindowList {
 
     counter = 0;
     update = function() {
+        const PERIOD = 6000; //determines how much frames pass between subsequent window updates
+        const PROBABILITY = 0.0025; //determines the probability of a light being turned on in any given window
+
+        const reverseProbability = 1 - PROBABILITY * 2;
         this.counter++;
-        if(this.counter = 6000) {
+
+        if(this.counter = PERIOD) {
             this.windows.forEach(window => {
                 const rand = Math.random();
-                if (rand < 0.0025) {
+                if (rand < PROBABILITY) {
                     window.material.emissive.set(0xFFE113);
-                } else if (rand > 0.995) {
+                } else if (rand > reverseProbability) {
                     window.material.emissive.set(0x000000);
                 }
                 this.counter = 0;
