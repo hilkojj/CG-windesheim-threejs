@@ -48,6 +48,23 @@ function init() {
             addLampPost(scene, 8 + i * -5., FLOOR_HEIGHT, 16.5);
     }
 
+    // Adding some buildings:
+    windows = new WindowList();
+    {
+        addHouse(scene, windows, -20, -22.5, 20);
+        addHouse(scene, windows, -15, -22.5, 7);
+        addHouse(scene, windows, -10, -22.5, 10);
+        addHouse(scene, windows, -3, -22.5, 4);
+        addHouse(scene, windows, 20, -22.5, 15);
+        addHouse(scene, windows, -22.5, -5, 10);
+        addHouse(scene, windows, -24, 0, 10);
+        addHouse(scene, windows, -20, 22.5, 4);
+        addHouse(scene, windows, -15, 22.5, 5);
+        addHouse(scene, windows,  2.5, 20, 4);
+        addHouse(scene, windows, -4, 27.5, 4);
+        addHouse(scene, windows, -9, 27.5, 3);
+    }
+
     // function to load a GLFT model, and to place it at (x, y, z)
     function loadModel(file, x, y, z) {
         const loader = new THREE.GLTFLoader();
@@ -68,7 +85,7 @@ function init() {
     }
 
     loadModel("models/zamek.glb", -10, FLOOR_HEIGHT, -0);           // a castle in Poland
-    loadModel("models/martini_toren.glb", -5, FLOOR_HEIGHT, 19);    // a tower in Groningen
+    loadModel("models/martini_toren.glb", -5, FLOOR_HEIGHT, 20);    // a tower in Groningen
     loadModel("models/road.glb", 0, FLOOR_HEIGHT + .01, 0);         // the road
 
     // Adding sun & hemisphere light:
@@ -125,6 +142,7 @@ function init() {
         renderer.render(scene, camera);
 
         cars.forEach(c => c.update());
+        windows.update();
     }
     render();
 }
